@@ -1,0 +1,32 @@
+---
+version: '3.5'
+
+services:
+  ssm:
+    container_name: ssm
+    restart: unless-stopped
+    build: .
+    command: /run.sh
+    depends_on:
+      - postgres
+    ports:
+      - 8443:8443
+    volumes:
+      - ssm:/opt/Supermicro
+
+  postgres:
+    container_name: ssm_postgres
+    image: library/postgres:13-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ssm
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ssm
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U ssm
+
+volumes:
+  postgres:
+  ssm:
